@@ -1,0 +1,1275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spring 2024-2025 Financial Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #1f2937;
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1920px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #ffffff 0%, #f3f4f6 100%);
+            padding: 30px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border: 1px solid #e5e7eb;
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+        }
+        
+        .header .subtitle {
+            font-size: 16px;
+            color: #6b7280;
+        }
+        
+        .header .last-updated {
+            font-size: 14px;
+            color: #6b7280;
+            margin-top: 10px;
+        }
+        
+        /* Metrics Cards */
+        .metrics-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+        
+        .metric-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 1px solid #e5e7eb;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%);
+        }
+        
+        .metric-card .label {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .metric-card .value {
+            font-size: 42px;
+            font-weight: 700;
+            color: #1f2937;
+            line-height: 1;
+        }
+        
+        .metric-card .unit {
+            font-size: 24px;
+            color: #6b7280;
+            font-weight: 400;
+        }
+        
+        .metric-card .change {
+            font-size: 14px;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .change.positive {
+            color: #10b981;
+        }
+        
+        .change.negative {
+            color: #ef4444;
+        }
+        
+        /* Voucher Progress Section */
+        .voucher-section {
+            background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+            padding: 30px;
+            border-radius: 16px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 1px solid #e5e7eb;
+        }
+        
+        .voucher-section h2 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 30px;
+        }
+        
+        .voucher-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 24px;
+        }
+        
+        .voucher-card {
+            text-align: center;
+        }
+        
+        
+        .gauge-container {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 15px;
+        }
+        
+        .voucher-card .voucher-name {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 15px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+        
+        .voucher-card .amount {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 5px;
+        }
+        
+        .voucher-card .target {
+            font-size: 14px;
+            color: #6b7280;
+        }
+        
+        /* Main Charts Grid */
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 24px;
+            margin-bottom: 30px;
+        }
+        
+        .chart-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 1px solid #e5e7eb;
+        }
+        
+        .chart-card h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #1f2937;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+        }
+        
+        /* Table Section */
+        .table-section {
+            background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+            padding: 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            overflow-x: auto;
+            border: 1px solid #e5e7eb;
+        }
+        
+        .table-section h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: #1f2937;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+        
+        .data-table th {
+            background-color: #f3f4f6;
+            padding: 14px;
+            text-align: left;
+            font-weight: 600;
+            color: #374151;
+            border-bottom: 2px solid #e5e7eb;
+        }
+        
+        .data-table th.number {
+            text-align: right;
+        }
+        
+        .data-table td {
+            padding: 12px 14px;
+            border-bottom: 1px solid #e5e7eb;
+            color: #4b5563;
+        }
+        
+        .data-table tr:hover {
+            background-color: #f9fafb;
+        }
+        
+        .number {
+            text-align: right;
+            font-variant-numeric: tabular-nums;
+        }
+        
+        /* Progress Bar */
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background-color: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%);
+            transition: width 0.3s ease;
+        }
+        
+        /* Responsive */
+        @media (max-width: 1400px) {
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .voucher-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .metrics-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .voucher-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>Spring 2024-2025 Tuition Collection Dashboard</h1>
+            <div class="subtitle">Financial Performance & Collection Analytics</div>
+            <div class="last-updated" id="lastUpdated"></div>
+        </div>
+        
+        <!-- Metrics Cards -->
+        <div class="metrics-container">
+            <div class="metric-card">
+                <div class="label">Total Semester Collection</div>
+                <div class="value" id="totalCollection">$0<span class="unit">M</span></div>
+                <div class="change positive">
+                    <span>↑ 12.5% from last month</span>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="label">Overall Collection Rate</div>
+                <div class="value" id="collectionRate">0<span class="unit">%</span></div>
+                <div class="progress-bar" style="margin-top: 15px;">
+                    <div class="progress-fill" id="collectionProgress"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Collection Rate Section -->
+        <div class="collection-rate-section" style="background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%); padding: 30px; border-radius: 16px; margin-bottom: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 1px solid #e5e7eb;">
+            <h2 style="font-size: 24px; font-weight: 600; color: #1f2937; margin-bottom: 24px;">Current Semester Collection Progress</h2>
+            <div class="collection-rate-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px;">
+                <!-- USD Collection Progress -->
+                <div class="collection-progress-card" style="background: #ffffff; padding: 25px; border-radius: 12px; border: 1px solid #e5e7eb;">
+                    <h3 style="font-size: 18px; font-weight: 600; color: #1f2937; margin-bottom: 20px;">Total USD Collection</h3>
+                    <div class="progress-info" style="margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span style="font-size: 14px; color: #6b7280;">Collected</span>
+                            <span style="font-size: 20px; font-weight: 600; color: #1f2937;" id="usdCollected"></span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <span style="font-size: 14px; color: #6b7280;">Target</span>
+                            <span style="font-size: 16px; color: #6b7280;" id="usdTarget"></span>
+                        </div>
+                    </div>
+                    <div class="progress-bar-container" style="position: relative; width: 100%; height: 40px; background-color: #e5e7eb; border-radius: 8px; overflow: visible;">
+                        <div class="progress-bar-fill" id="usdProgressBar" style="height: 100%; background: linear-gradient(90deg, #10b981 0%, #059669 100%); border-radius: 8px; transition: width 0.5s ease; position: relative;">
+                            <span class="progress-label" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: white; font-weight: 600; font-size: 16px;" id="usdProgressLabel"></span>
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+                        <span style="font-size: 14px; color: #6b7280;">Uncollected: <span id="usdUncollected" style="color: #ef4444; font-weight: 600;"></span></span>
+                        <span style="font-size: 14px; color: #10b981; font-weight: 600;" id="usdPercentage"></span>
+                    </div>
+                </div>
+                
+                <!-- LBP Collection Progress -->
+                <div class="collection-progress-card" style="background: #ffffff; padding: 25px; border-radius: 12px; border: 1px solid #e5e7eb;">
+                    <h3 style="font-size: 18px; font-weight: 600; color: #1f2937; margin-bottom: 20px;">Total LBP Collection</h3>
+                    <div class="progress-info" style="margin-bottom: 15px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                            <span style="font-size: 14px; color: #6b7280;">Collected</span>
+                            <span style="font-size: 20px; font-weight: 600; color: #1f2937;" id="lbpCollected"></span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <span style="font-size: 14px; color: #6b7280;">Target</span>
+                            <span style="font-size: 16px; color: #6b7280;" id="lbpTarget"></span>
+                        </div>
+                    </div>
+                    <div class="progress-bar-container" style="position: relative; width: 100%; height: 40px; background-color: #e5e7eb; border-radius: 8px; overflow: visible;">
+                        <div class="progress-bar-fill" id="lbpProgressBar" style="height: 100%; background: linear-gradient(90deg, #3b82f6 0%, #2563eb 100%); border-radius: 8px; transition: width 0.5s ease; position: relative;">
+                            <span class="progress-label" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); color: white; font-weight: 600; font-size: 16px;" id="lbpProgressLabel"></span>
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; margin-top: 10px;">
+                        <span style="font-size: 14px; color: #6b7280;">Uncollected: <span id="lbpUncollected" style="color: #ef4444; font-weight: 600;"></span></span>
+                        <span style="font-size: 14px; color: #3b82f6; font-weight: 600;" id="lbpPercentage"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Voucher Progress Section -->
+        <div class="voucher-section">
+            <h2>Voucher Collection Progress</h2>
+            <div class="voucher-grid" id="voucherGrid">
+                <!-- Voucher gauges will be inserted here -->
+            </div>
+        </div>
+        
+        <!-- Main Charts Grid -->
+        <div class="charts-grid">
+            <!-- Campus Performance -->
+            <div class="chart-card">
+                <h3>Campus Performance</h3>
+                <div class="chart-container">
+                    <canvas id="campusChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- Voucher Trend -->
+            <div class="chart-card">
+                <h3>Voucher Collection Trend</h3>
+                <div class="chart-container">
+                    <canvas id="voucherTrendChart"></canvas>
+                </div>
+            </div>
+            
+            <!-- School Distribution -->
+            <div class="chart-card">
+                <h3>School Distribution</h3>
+                <div class="chart-container">
+                    <canvas id="schoolChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Voucher Week Analysis Section -->
+        <div class="voucher-week-section" style="background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%); padding: 30px; border-radius: 16px; margin-bottom: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); border: 1px solid #e5e7eb;">
+            <h2 style="font-size: 24px; font-weight: 600; color: #1f2937; margin-bottom: 24px;">Voucher Payment Week Collections</h2>
+            <div class="voucher-week-grid" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 24px; margin-bottom: 30px;" id="voucherWeekCards">
+            </div>
+            <div class="chart-card">
+                <h3>Daily Collections During Voucher Weeks</h3>
+                <div class="chart-container">
+                    <canvas id="voucherWeekChart"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Time Metrics Section -->
+        <div class="time-metrics-section" style="margin-bottom: 30px;">
+            <h2 style="font-size: 24px; font-weight: 600; color: #1f2937; margin-bottom: 24px;">Time-Based Collection Analysis</h2>
+            <div class="charts-grid">
+                <!-- Day of Week Analysis -->
+                <div class="chart-card">
+                    <h3>Collections by Day of Week</h3>
+                    <div class="chart-container">
+                        <canvas id="dayOfWeekChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Week of Month Analysis -->
+                <div class="chart-card">
+                    <h3>Collections by Week of Month</h3>
+                    <div class="chart-container">
+                        <canvas id="weekOfMonthChart"></canvas>
+                    </div>
+                </div>
+                
+                <!-- Monthly Trend -->
+                <div class="chart-card">
+                    <h3>Monthly Collection Trend</h3>
+                    <div class="chart-container">
+                        <canvas id="monthlyTrendChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Data Table -->
+        <div class="table-section">
+            <h3>Campus Collection Details</h3>
+            <table class="data-table" id="campusTable">
+                <thead>
+                    <tr>
+                        <th>Campus</th>
+                        <th class="number">Current Semester</th>
+                        <th class="number">Contribution Rate</th>
+                        <th class="number">V1</th>
+                        <th class="number">V2</th>
+                        <th class="number">V3</th>
+                        <th class="number">V4</th>
+                        <th class="number">Others</th>
+                    </tr>
+                </thead>
+                <tbody id="campusTableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script>
+        // Load voucher complete data
+        const voucherCompleteData = {"V1": {"week": {"total": 3038765, "daily_breakdown": {"2025-03-03": 293916, "2025-03-04": 311055, "2025-03-05": 448205, "2025-03-06": 843431, "2025-03-07": 1142158}, "period": "Mar 03 - Mar 07, 2025"}, "week_after": {"total": 510797, "daily_breakdown": {"2025-03-08": 58745, "2025-03-09": 9420, "2025-03-10": 126775, "2025-03-11": 107764, "2025-03-12": 91230, "2025-03-13": 78875, "2025-03-14": 37988}, "period": "Mar 08 - Mar 14, 2025"}}, "V2": {"week": {"total": 2222868, "daily_breakdown": {"2025-04-07": 185573, "2025-04-08": 280767, "2025-04-09": 416397, "2025-04-10": 585006, "2025-04-11": 755125}, "period": "Apr 07 - Apr 11, 2025"}, "week_after": {"total": 619006, "daily_breakdown": {"2025-04-12": 50998, "2025-04-13": 7560, "2025-04-14": 181802, "2025-04-15": 132298, "2025-04-16": 126456, "2025-04-17": 88433, "2025-04-18": 31459}, "period": "Apr 12 - Apr 18, 2025"}}, "V3": {"week": {"total": 3058590, "daily_breakdown": {"2025-05-05": 477881, "2025-05-06": 517525, "2025-05-07": 518076, "2025-05-08": 713365, "2025-05-09": 831743}, "period": "May 05 - May 09, 2025"}, "week_after": {"total": 1188765, "daily_breakdown": {"2025-05-10": 143405, "2025-05-11": 10422, "2025-05-12": 265394, "2025-05-13": 239235, "2025-05-14": 205436, "2025-05-15": 263563, "2025-05-16": 60910}, "period": "May 10 - May 16, 2025"}}, "V4": {"week": {"total": 2287784, "daily_breakdown": {"2025-06-02": 514547, "2025-06-03": 730032, "2025-06-04": 912797, "2025-06-05": 116454, "2025-06-06": 13954}, "period": "Jun 02 - Jun 06, 2025"}, "week_after": {"total": 821680, "daily_breakdown": {"2025-06-07": 11643, "2025-06-08": 2420, "2025-06-09": 46265, "2025-06-10": 257849, "2025-06-11": 201920, "2025-06-12": 213923, "2025-06-13": 86120, "2025-06-14": 1540}, "period": "Jun 07 - Jun 14, 2025"}}};
+        
+        // Convert to old format for compatibility
+        const voucherWeekData = {};
+        Object.entries(voucherCompleteData).forEach(([voucher, data]) => {
+            voucherWeekData[`Week of ${voucher}`] = data.week;
+        });
+        
+        // Load time metrics data
+        const timeMetricsData = {"by_day_of_week": {"Monday": 3267414.0, "Tuesday": 3799264.0, "Wednesday": 4052385.0, "Thursday": 4008399.0, "Friday": 4017751.0, "Saturday": 1035308.0, "Sunday": 174989.0}, "by_week_of_month": {"Week 3": 2460522.0, "Week 4": 2343948.0, "Week 1": 8533348.0, "Week 2": 6131954.0, "Week 5": 885738.0}, "by_month": {"February 2025": 505738.0, "March 2025": 4318681.0, "April 2025": 4190940.0, "May 2025": 6156911.0, "June 2025": 4509920.0, "July 2025": 673320.0}};
+        
+        // Load dashboard data
+        const dashboardData = {"last_updated": "2025-07-19 10:02:27", "semester": "Spring 2024-2025", "campus_data": {"Beirut": {"name": "Beirut", "total_usd": 10140134, "current_semester_usd": 8261251, "other_semesters_usd": 1878883, "vouchers_usd": {"V1": 2619802, "V2": 1948156, "V3": 1863554, "V4": 1716408}, "student_count_usd": 28895}, "Saida": {"name": "Saida", "total_usd": 3403809, "current_semester_usd": 2888714, "other_semesters_usd": 515095, "vouchers_usd": {"V1": 653725, "V2": 476443, "V3": 481978, "V4": 451744}, "student_count_usd": 10967}, "Nabatieh": {"name": "Nabatieh", "total_usd": 2328680, "current_semester_usd": 1851726, "other_semesters_usd": 476954, "vouchers_usd": {"V1": 622344, "V2": 431614, "V3": 401361, "V4": 364897}, "student_count_usd": 7052}, "Tripoli": {"name": "Tripoli", "total_usd": 3509322, "current_semester_usd": 2755999, "other_semesters_usd": 753323, "vouchers_usd": {"V1": 571354, "V2": 452629, "V3": 441201, "V4": 430016}, "student_count_usd": 10852}, "Mount Lebanon": {"name": "Mount Lebanon", "total_usd": 932161, "current_semester_usd": 762026, "other_semesters_usd": 170135, "vouchers_usd": {"V1": 167473, "V2": 118190, "V3": 116067, "V4": 103665}, "student_count_usd": 2828}, "Tyre": {"name": "Tyre", "total_usd": 3422094, "current_semester_usd": 2669964, "other_semesters_usd": 752130, "vouchers_usd": {"V1": 630459, "V2": 468454, "V3": 482292, "V4": 460072}, "student_count_usd": 9906}, "Akkar": {"name": "Akkar", "total_usd": 1611501, "current_semester_usd": 1165830, "other_semesters_usd": 445671, "vouchers_usd": {"V1": 418599, "V2": 261476, "V3": 206840, "V4": 181855}, "student_count_usd": 3915}}, "school_data": {"SoFR": {"name": "Fine Arts", "total_usd": 156475, "current_semester_usd": 141595, "other_semesters_usd": 14880, "percentage": 0.7}, "SoAS": {"name": "Arts & Sciences", "total_usd": 9781744, "current_semester_usd": 7870973, "other_semesters_usd": 1910771, "percentage": 38.67}, "SoEN": {"name": "Engineering", "total_usd": 4650557, "current_semester_usd": 3609832, "other_semesters_usd": 1040725, "percentage": 17.73}, "SoBU": {"name": "Business", "total_usd": 5381794, "current_semester_usd": 4320271, "other_semesters_usd": 1061523, "percentage": 21.22}, "SoPH": {"name": "Pharmacy", "total_usd": 4063850, "current_semester_usd": 3356255, "other_semesters_usd": 707595, "percentage": 16.49}, "SoED": {"name": "Education", "total_usd": 1313281, "current_semester_usd": 1056584, "other_semesters_usd": 256697, "percentage": 5.19}}, "totals": {"current_semester_usd": 20355510, "voucher_totals_usd": {"V1": 5683756, "V2": 4156962, "V3": 3993293, "V4": 3708657}}, "metrics": {"total_semester_collection": 20355510, "students_paid": 74415, "collection_percentage": 68.2}, "potential_collections": {"usd": {"V1": 7932833, "V2": 5958403, "V3": 5973367, "V4": 6263959, "Others": 3711222, "Total": 29839784}, "lbp": {"V1": 130638534000, "V2": 97855557000, "V3": 92407390000, "V4": 99315525000, "Others": 58005455000, "Total": 478222461000}}, "actual_collections": {"usd": {"V1": 5683756, "V2": 4156962, "V3": 3993293, "V4": 3708657, "Others": 2812842, "Total": 20355510}, "lbp": {"V1": 92978798000, "V2": 67691549000, "V3": 60625929000, "V4": 55517537000, "Others": 35806540000, "Total": 312620353000}}, "collection_percentages": {"usd": {"V1": 71.6, "V2": 69.8, "V3": 66.9, "V4": 59.2, "Others": 75.8, "Total": 68.2}, "lbp": {"V1": 71.2, "V2": 69.2, "V3": 65.6, "V4": 55.9, "Others": 61.7}}};
+        
+        let charts = {};
+        
+        // Chart.js defaults
+        Chart.defaults.color = '#6b7280';
+        Chart.defaults.borderColor = '#e5e7eb';
+        Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif';
+        
+        // Format numbers
+        function formatNumber(num) {
+            return new Intl.NumberFormat('en-US').format(num);
+        }
+        
+        function formatCurrency(num) {
+            return '$' + formatNumber(num);
+        }
+        
+        function formatMillions(num) {
+            return (num / 1000000).toFixed(2);
+        }
+        
+        function formatLBP(num) {
+            if (num >= 1000000000) {
+                return (num / 1000000000).toFixed(1) + 'B LBP';
+            } else if (num >= 1000000) {
+                return (num / 1000000).toFixed(1) + 'M LBP';
+            }
+            return formatNumber(num) + ' LBP';
+        }
+        
+        // Initialize dashboard
+        function initializeDashboard() {
+            updateLastUpdated();
+            updateMetrics();
+            createVoucherGauges();
+            createCampusChart();
+            createVoucherTrendChart();
+            createSchoolChart();
+            createTable();
+            createVoucherWeekAnalysis();
+            updateCollectionRates();
+            createTimeMetricsCharts();
+        }
+        
+        // Update last updated time
+        function updateLastUpdated() {
+            const lastUpdated = new Date(dashboardData.last_updated);
+            document.getElementById('lastUpdated').textContent = 
+                `Last updated: ${lastUpdated.toLocaleDateString()} ${lastUpdated.toLocaleTimeString()}`;
+        }
+        
+        // Update metric cards
+        function updateMetrics() {
+            const metrics = dashboardData.metrics;
+            document.getElementById('totalCollection').innerHTML = 
+                `${formatCurrency(metrics.total_semester_collection)}`;
+            document.getElementById('collectionRate').innerHTML = 
+                `${metrics.collection_percentage}<span class="unit">%</span>`;
+            document.getElementById('collectionProgress').style.width = 
+                `${metrics.collection_percentage}%`;
+        }
+        
+        // Create voucher gauges
+        function createVoucherGauges() {
+            const voucherGrid = document.getElementById('voucherGrid');
+            const vouchers = ['V1', 'V2', 'V3', 'V4', 'Others'];
+            
+            vouchers.forEach(voucher => {
+                const actual = dashboardData.actual_collections.usd[voucher];
+                const potential = dashboardData.potential_collections.usd[voucher];
+                const percentage = dashboardData.collection_percentages.usd[voucher];
+                
+                const voucherCard = document.createElement('div');
+                voucherCard.className = 'voucher-card';
+                
+                voucherCard.innerHTML = `
+                    <div class="voucher-name">${voucher === 'Others' ? 'Other Fees' : 'Voucher ' + voucher.substring(1)}</div>
+                    <div class="gauge-wrapper" style="position: relative;">
+                        <div class="gauge-container">
+                            <canvas id="gauge${voucher}"></canvas>
+                        </div>
+                        <div class="percentage-display" style="position: absolute; bottom: 35px; left: 50%; transform: translateX(-50%); font-size: 24px; font-weight: 600; color: #1f2937;">${percentage}%</div>
+                    </div>
+                    <div class="amount">${formatCurrency(actual)}</div>
+                    <div class="target">of ${formatCurrency(potential)}</div>
+                `;
+                
+                voucherGrid.appendChild(voucherCard);
+                
+                // Create gauge chart
+                const ctx = document.getElementById(`gauge${voucher}`).getContext('2d');
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        datasets: [{
+                            data: [percentage, 100 - percentage],
+                            backgroundColor: [
+                                percentage > 70 ? '#10b981' : percentage > 50 ? '#f59e0b' : '#ef4444',
+                                '#e5e7eb'
+                            ],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        circumference: 180,
+                        rotation: 270,
+                        cutout: '70%',
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: { enabled: false },
+                            datalabels: {
+                                display: false
+                            }
+                        }
+                    },
+                    plugins: [ChartDataLabels]
+                });
+            });
+        }
+        
+        // Create campus performance chart
+        function createCampusChart() {
+            const campusData = dashboardData.campus_data;
+            const campusNames = [];
+            const campusValues = [];
+            const campusPercentages = [];
+            const total = dashboardData.totals.current_semester_usd;
+            
+            const sortedCampuses = Object.entries(campusData)
+                .sort((a, b) => b[1].current_semester_usd - a[1].current_semester_usd);
+            
+            sortedCampuses.forEach(([key, campus]) => {
+                campusNames.push(campus.name);
+                campusValues.push(campus.current_semester_usd / 1000000);
+                campusPercentages.push(((campus.current_semester_usd / total) * 100).toFixed(1));
+            });
+            
+            const ctx = document.getElementById('campusChart').getContext('2d');
+            charts.campus = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: campusNames,
+                    datasets: [{
+                        data: campusValues,
+                        backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        borderWidth: 1,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const percentage = campusPercentages[context.dataIndex];
+                                    return formatCurrency(context.raw * 1000000) + ' (' + percentage + '%)';
+                                }
+                            }
+                        },
+                        datalabels: {
+                            display: true,
+                            align: 'end',
+                            anchor: 'end',
+                            color: '#1f2937',
+                            font: {
+                                weight: 'bold',
+                                size: 12
+                            },
+                            formatter: function(value, context) {
+                                return campusPercentages[context.dataIndex] + '%';
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            beginAtZero: true,
+                            grid: {
+                                color: '#e5e7eb'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value + 'M';
+                                }
+                            }
+                        },
+                        y: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                },
+                plugins: [ChartDataLabels]
+            });
+        }
+        
+        // Create voucher trend chart
+        function createVoucherTrendChart() {
+            const voucherData = dashboardData.totals.voucher_totals_usd;
+            const potentialData = dashboardData.potential_collections.usd;
+            
+            const ctx = document.getElementById('voucherTrendChart').getContext('2d');
+            charts.voucherTrend = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['V1', 'V2', 'V3', 'V4'],
+                    datasets: [{
+                        label: 'Actual',
+                        data: [
+                            voucherData.V1 / 1000000,
+                            voucherData.V2 / 1000000,
+                            voucherData.V3 / 1000000,
+                            voucherData.V4 / 1000000
+                        ],
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 6,
+                        pointHoverRadius: 8,
+                        pointBackgroundColor: '#10b981',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2
+                    }, {
+                        label: 'Target',
+                        data: [
+                            potentialData.V1 / 1000000,
+                            potentialData.V2 / 1000000,
+                            potentialData.V3 / 1000000,
+                            potentialData.V4 / 1000000
+                        ],
+                        borderColor: '#6b7280',
+                        borderDash: [5, 5],
+                        tension: 0.4,
+                        fill: false,
+                        pointRadius: 4,
+                        pointHoverRadius: 6
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                padding: 15,
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + formatCurrency(context.raw * 1000000);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: '#e5e7eb'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value + 'M';
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: '#e5e7eb'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Create school distribution chart
+        function createSchoolChart() {
+            const schoolData = dashboardData.school_data;
+            const schoolNames = [];
+            const schoolValues = [];
+            const backgroundColors = [
+                '#3b82f6',
+                '#10b981',
+                '#f59e0b',
+                '#ef4444',
+                '#8b5cf6',
+                '#06b6d4'
+            ];
+            
+            Object.entries(schoolData).forEach(([key, school]) => {
+                schoolNames.push(key);
+                schoolValues.push(school.current_semester_usd);
+            });
+            
+            const ctx = document.getElementById('schoolChart').getContext('2d');
+            charts.school = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: schoolNames,
+                    datasets: [{
+                        data: schoolValues,
+                        backgroundColor: backgroundColors.map(color => color + 'cc'),
+                        borderColor: backgroundColors,
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '65%',
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: {
+                                padding: 15,
+                                font: { size: 12 },
+                                generateLabels: function(chart) {
+                                    const data = chart.data;
+                                    if (data.labels.length && data.datasets.length) {
+                                        const total = data.datasets[0].data.reduce((a, b) => a + b, 0);
+                                        return data.labels.map((label, i) => {
+                                            const value = data.datasets[0].data[i];
+                                            const percentage = ((value / total) * 100).toFixed(1);
+                                            return {
+                                                text: `${label} (${percentage}%)`,
+                                                fillStyle: data.datasets[0].backgroundColor[i],
+                                                hidden: false,
+                                                index: i
+                                            };
+                                        });
+                                    }
+                                    return [];
+                                }
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const label = context.label || '';
+                                    const value = formatCurrency(context.raw);
+                                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                    const percentage = ((context.raw / total) * 100).toFixed(1);
+                                    return `${label}: ${value} (${percentage}%)`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Create data table
+        function createTable() {
+            const tbody = document.getElementById('campusTableBody');
+            const campusData = dashboardData.campus_data;
+            const total = dashboardData.totals.current_semester_usd;
+            
+            let html = '';
+            
+            const sortedCampuses = Object.entries(campusData)
+                .sort((a, b) => b[1].current_semester_usd - a[1].current_semester_usd);
+            
+            sortedCampuses.forEach(([key, campus]) => {
+                const collectionRate = ((campus.current_semester_usd / total) * 100).toFixed(1);
+                const otherFees = campus.current_semester_usd - 
+                    (campus.vouchers_usd.V1 + campus.vouchers_usd.V2 + 
+                     campus.vouchers_usd.V3 + campus.vouchers_usd.V4);
+                
+                html += `
+                    <tr>
+                        <td style="font-weight: bold;">${campus.name}</td>
+                        <td class="number">${formatCurrency(campus.current_semester_usd)}</td>
+                        <td class="number">${collectionRate}%</td>
+                        <td class="number">${formatCurrency(campus.vouchers_usd.V1)}</td>
+                        <td class="number">${formatCurrency(campus.vouchers_usd.V2)}</td>
+                        <td class="number">${formatCurrency(campus.vouchers_usd.V3)}</td>
+                        <td class="number">${formatCurrency(campus.vouchers_usd.V4)}</td>
+                        <td class="number">${formatCurrency(otherFees)}</td>
+                    </tr>
+                `;
+            });
+            
+            tbody.innerHTML = html;
+        }
+        
+        // Create voucher week analysis
+        function createVoucherWeekAnalysis() {
+            const voucherWeekCards = document.getElementById('voucherWeekCards');
+            
+            // Create cards for each voucher with week and week after
+            Object.entries(voucherCompleteData).forEach(([voucher, data]) => {
+                // Week of voucher card
+                const weekCard = document.createElement('div');
+                weekCard.className = 'metric-card';
+                weekCard.innerHTML = `
+                    <div class="label">Week of ${voucher}</div>
+                    <div class="value">${formatCurrency(data.week.total)}</div>
+                    <div style="font-size: 14px; color: #6b7280; margin-top: 10px;">${data.week.period}</div>
+                `;
+                voucherWeekCards.appendChild(weekCard);
+                
+                // Week after voucher card
+                const weekAfterCard = document.createElement('div');
+                weekAfterCard.className = 'metric-card';
+                const percentChange = ((data.week_after.total / data.week.total - 1) * 100).toFixed(1);
+                weekAfterCard.innerHTML = `
+                    <div class="label">Week After ${voucher}</div>
+                    <div class="value">${formatCurrency(data.week_after.total)}</div>
+                    <div style="font-size: 14px; color: #6b7280; margin-top: 10px;">${data.week_after.period}</div>
+                    <div class="change ${percentChange < 0 ? 'negative' : 'positive'}">
+                        <span>${percentChange < 0 ? '↓' : '↑'} ${Math.abs(percentChange)}% vs week of</span>
+                    </div>
+                `;
+                voucherWeekCards.appendChild(weekAfterCard);
+            });
+            
+            // Create chart showing daily collections during voucher weeks
+            const ctx = document.getElementById('voucherWeekChart').getContext('2d');
+            
+            // Prepare data for chart
+            const allDates = new Set();
+            const datasets = [];
+            const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'];
+            let colorIndex = 0;
+            
+            // Collect all unique dates from both weeks and weeks after
+            Object.values(voucherCompleteData).forEach(data => {
+                Object.keys(data.week.daily_breakdown).forEach(date => allDates.add(date));
+                Object.keys(data.week_after.daily_breakdown).forEach(date => allDates.add(date));
+            });
+            
+            const sortedDates = Array.from(allDates).sort();
+            
+            // Create datasets for weeks and weeks after
+            Object.entries(voucherCompleteData).forEach(([voucher, data]) => {
+                // Week of voucher
+                const weekValues = sortedDates.map(date => {
+                    return data.week.daily_breakdown[date] ? data.week.daily_breakdown[date] / 1000000 : null;
+                });
+                
+                datasets.push({
+                    label: `Week of ${voucher}`,
+                    data: weekValues,
+                    backgroundColor: colors[colorIndex] + '20',
+                    borderColor: colors[colorIndex],
+                    borderWidth: 2,
+                    pointRadius: 6,
+                    pointHoverRadius: 8,
+                    pointBackgroundColor: colors[colorIndex],
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                    spanGaps: false
+                });
+                
+                // Week after voucher - use dashed line
+                const weekAfterValues = sortedDates.map(date => {
+                    return data.week_after.daily_breakdown[date] ? data.week_after.daily_breakdown[date] / 1000000 : null;
+                });
+                
+                datasets.push({
+                    label: `Week After ${voucher}`,
+                    data: weekAfterValues,
+                    backgroundColor: colors[colorIndex] + '10',
+                    borderColor: colors[colorIndex],
+                    borderWidth: 2,
+                    borderDash: [5, 5],
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    pointBackgroundColor: colors[colorIndex],
+                    pointBorderColor: '#ffffff',
+                    pointBorderWidth: 2,
+                    spanGaps: false
+                });
+                
+                colorIndex = (colorIndex + 1) % colors.length;
+            });
+            
+            charts.voucherWeek = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: sortedDates.map(date => {
+                        const d = new Date(date);
+                        return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                    }),
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                padding: 15,
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    if (context.parsed.y !== null) {
+                                        return context.dataset.label + ': ' + formatCurrency(context.parsed.y * 1000000);
+                                    }
+                                    return null;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: {
+                                color: '#e5e7eb'
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: '#e5e7eb'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value + 'M';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Update collection rates
+        function updateCollectionRates() {
+            // USD Collection Data
+            const usdCollected = dashboardData.actual_collections.usd.Total;
+            const usdTarget = dashboardData.potential_collections.usd.Total;
+            const usdPercentage = dashboardData.collection_percentages.usd.Total;
+            const usdUncollected = usdTarget - usdCollected;
+            
+            // Update USD elements
+            document.getElementById('usdCollected').textContent = formatCurrency(usdCollected);
+            document.getElementById('usdTarget').textContent = formatCurrency(usdTarget);
+            document.getElementById('usdUncollected').textContent = formatCurrency(usdUncollected);
+            document.getElementById('usdPercentage').textContent = usdPercentage + '% Collected';
+            document.getElementById('usdProgressBar').style.width = usdPercentage + '%';
+            document.getElementById('usdProgressLabel').textContent = usdPercentage + '%';
+            
+            // LBP Collection Data
+            const lbpCollected = dashboardData.actual_collections.lbp.Total;
+            const lbpTarget = dashboardData.potential_collections.lbp.Total;
+            const lbpPercentage = ((lbpCollected / lbpTarget) * 100).toFixed(1);
+            const lbpUncollected = lbpTarget - lbpCollected;
+            
+            // Update LBP elements
+            document.getElementById('lbpCollected').textContent = formatLBP(lbpCollected);
+            document.getElementById('lbpTarget').textContent = formatLBP(lbpTarget);
+            document.getElementById('lbpUncollected').textContent = formatLBP(lbpUncollected);
+            document.getElementById('lbpPercentage').textContent = lbpPercentage + '% Collected';
+            document.getElementById('lbpProgressBar').style.width = lbpPercentage + '%';
+            document.getElementById('lbpProgressLabel').textContent = lbpPercentage + '%';
+            
+            // Move label outside if percentage is too low
+            if (usdPercentage < 15) {
+                const label = document.getElementById('usdProgressLabel');
+                label.style.right = '-45px';
+                label.style.color = '#1f2937';
+            }
+            if (lbpPercentage < 15) {
+                const label = document.getElementById('lbpProgressLabel');
+                label.style.right = '-45px';
+                label.style.color = '#1f2937';
+            }
+        }
+        
+        // Create time metrics charts
+        function createTimeMetricsCharts() {
+            try {
+                // Day of Week Chart
+                const dayLabels = Object.keys(timeMetricsData.by_day_of_week);
+                const dayValues = Object.values(timeMetricsData.by_day_of_week).map(v => v / 1000000);
+                
+                const dayCtx = document.getElementById('dayOfWeekChart').getContext('2d');
+                charts.dayOfWeek = new Chart(dayCtx, {
+                type: 'bar',
+                data: {
+                    labels: dayLabels,
+                    datasets: [{
+                        label: 'Collections',
+                        data: dayValues,
+                        backgroundColor: 'rgba(59, 130, 246, 0.8)',
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        borderWidth: 1,
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return formatCurrency(context.raw * 1000000);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: '#e5e7eb'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value + 'M';
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Week of Month Chart
+            const weekLabels = ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5'];
+            const weekValues = weekLabels.map(week => 
+                (timeMetricsData.by_week_of_month[week] || 0) / 1000000
+            );
+            
+            const weekCtx = document.getElementById('weekOfMonthChart').getContext('2d');
+            charts.weekOfMonth = new Chart(weekCtx, {
+                type: 'line',
+                data: {
+                    labels: weekLabels,
+                    datasets: [{
+                        label: 'Collections',
+                        data: weekValues,
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 6,
+                        pointHoverRadius: 8,
+                        pointBackgroundColor: '#10b981',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return formatCurrency(context.raw * 1000000);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: '#e5e7eb'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value + 'M';
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: '#e5e7eb'
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Monthly Trend Chart
+            const monthData = timeMetricsData.by_month;
+            const monthLabels = Object.keys(monthData).map(m => m.split(' ')[0].substring(0, 3));
+            const monthValues = Object.values(monthData).map(v => v / 1000000);
+            
+            const monthCtx = document.getElementById('monthlyTrendChart').getContext('2d');
+            charts.monthlyTrend = new Chart(monthCtx, {
+                type: 'line',
+                data: {
+                    labels: monthLabels,
+                    datasets: [{
+                        label: 'Collections 2025',
+                        data: monthValues,
+                        borderColor: '#8b5cf6',
+                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
+                        tension: 0.4,
+                        fill: true,
+                        pointRadius: 6,
+                        pointHoverRadius: 8,
+                        pointBackgroundColor: '#8b5cf6',
+                        pointBorderColor: '#ffffff',
+                        pointBorderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                padding: 15,
+                                usePointStyle: true
+                            }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.dataset.label + ': ' + formatCurrency(context.raw * 1000000);
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: '#e5e7eb'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return '$' + value + 'M';
+                                }
+                            }
+                        },
+                        x: {
+                            grid: {
+                                color: '#e5e7eb'
+                            }
+                        }
+                    }
+                }
+            });
+            } catch (error) {
+                console.error('Error creating time metrics charts:', error);
+            }
+        }
+        
+        // Initialize on page load
+        window.onload = initializeDashboard;
+    </script>
+</body>
+</html>
