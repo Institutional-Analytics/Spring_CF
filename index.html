@@ -57,7 +57,7 @@
         /* Metrics Cards */
         .metrics-container {
             display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 24px;
             margin-bottom: 30px;
         }
@@ -300,16 +300,30 @@
         </div>
         
         <!-- Metrics Cards -->
-        <div class="metrics-container">
+        <div class="metrics-container" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;">
             <div class="metric-card">
-                <div class="label">Total Semester Collection</div>
-                <div class="value" id="totalCollection">$0<span class="unit">M</span></div>
-                <div class="change positive">
-                    <span>↑ 12.5% from last month</span>
+                <div class="label">Total Collections (Including Other Semesters)</div>
+                <div class="value" id="totalAllCollection">$0<span class="unit">M</span></div>
+                <div style="margin-top: 15px; padding-top: 15px; border-top: 1px solid #e5e7eb;">
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                        <span style="font-size: 14px; color: #6b7280;">Current Semester:</span>
+                        <span style="font-size: 14px; font-weight: 600; color: #10b981;" id="currentSemesterAmount">$0</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                        <span style="font-size: 14px; color: #6b7280;">Other Semesters:</span>
+                        <span style="font-size: 14px; font-weight: 600; color: #6b7280;" id="otherSemestersAmount">$0</span>
+                    </div>
                 </div>
             </div>
             <div class="metric-card">
-                <div class="label">Overall Collection Rate</div>
+                <div class="label">Current Semester Collection</div>
+                <div class="value" id="totalCollection">$0<span class="unit">M</span></div>
+                <div style="margin-top: 10px;">
+                    <span style="font-size: 14px; color: #6b7280;" id="percentOfTotal">0% of total collections</span>
+                </div>
+            </div>
+            <div class="metric-card">
+                <div class="label">Current Semester Overall Collection Rate</div>
                 <div class="value" id="collectionRate">0<span class="unit">%</span></div>
                 <div class="progress-bar" style="margin-top: 15px;">
                     <div class="progress-fill" id="collectionProgress"></div>
@@ -473,7 +487,7 @@
     
     <script>
         // Load voucher complete data
-        const voucherCompleteData = {"V1": {"week": {"total": 3038765, "daily_breakdown": {"2025-03-03": 293916, "2025-03-04": 311055, "2025-03-05": 448205, "2025-03-06": 843431, "2025-03-07": 1142158}, "period": "Mar 03 - Mar 07, 2025"}, "week_after": {"total": 510797, "daily_breakdown": {"2025-03-08": 58745, "2025-03-09": 9420, "2025-03-10": 126775, "2025-03-11": 107764, "2025-03-12": 91230, "2025-03-13": 78875, "2025-03-14": 37988}, "period": "Mar 08 - Mar 14, 2025"}}, "V2": {"week": {"total": 2222868, "daily_breakdown": {"2025-04-07": 185573, "2025-04-08": 280767, "2025-04-09": 416397, "2025-04-10": 585006, "2025-04-11": 755125}, "period": "Apr 07 - Apr 11, 2025"}, "week_after": {"total": 619006, "daily_breakdown": {"2025-04-12": 50998, "2025-04-13": 7560, "2025-04-14": 181802, "2025-04-15": 132298, "2025-04-16": 126456, "2025-04-17": 88433, "2025-04-18": 31459}, "period": "Apr 12 - Apr 18, 2025"}}, "V3": {"week": {"total": 3058590, "daily_breakdown": {"2025-05-05": 477881, "2025-05-06": 517525, "2025-05-07": 518076, "2025-05-08": 713365, "2025-05-09": 831743}, "period": "May 05 - May 09, 2025"}, "week_after": {"total": 1188765, "daily_breakdown": {"2025-05-10": 143405, "2025-05-11": 10422, "2025-05-12": 265394, "2025-05-13": 239235, "2025-05-14": 205436, "2025-05-15": 263563, "2025-05-16": 60910}, "period": "May 10 - May 16, 2025"}}, "V4": {"week": {"total": 2287784, "daily_breakdown": {"2025-06-02": 514547, "2025-06-03": 730032, "2025-06-04": 912797, "2025-06-05": 116454, "2025-06-06": 13954}, "period": "Jun 02 - Jun 06, 2025"}, "week_after": {"total": 821680, "daily_breakdown": {"2025-06-07": 11643, "2025-06-08": 2420, "2025-06-09": 46265, "2025-06-10": 257849, "2025-06-11": 201920, "2025-06-12": 213923, "2025-06-13": 86120, "2025-06-14": 1540}, "period": "Jun 07 - Jun 14, 2025"}}};
+        const voucherCompleteData = {"V1": {"week": {"total": 3038765, "daily_breakdown": {"2025-03-03": 293916.0, "2025-03-04": 311055.0, "2025-03-05": 448205.0, "2025-03-06": 843431.0, "2025-03-07": 1142158.0}, "period": "Mar 03 - Mar 07, 2025"}, "week_after": {"total": 510797, "daily_breakdown": {"2025-03-08": 58745.0, "2025-03-09": 9420.0, "2025-03-10": 126775.0, "2025-03-11": 107764.0, "2025-03-12": 91230.0, "2025-03-13": 78875.0, "2025-03-14": 37988.0}, "period": "Mar 08 - Mar 14, 2025"}}, "V2": {"week": {"total": 2222868, "daily_breakdown": {"2025-04-07": 185573.0, "2025-04-08": 280767.0, "2025-04-09": 416397.0, "2025-04-10": 585006.0, "2025-04-11": 755125.0}, "period": "Apr 07 - Apr 11, 2025"}, "week_after": {"total": 619006, "daily_breakdown": {"2025-04-12": 50998.0, "2025-04-13": 7560.0, "2025-04-14": 181802.0, "2025-04-15": 132298.0, "2025-04-16": 126456.0, "2025-04-17": 88433.0, "2025-04-18": 31459.0}, "period": "Apr 12 - Apr 18, 2025"}}, "V3": {"week": {"total": 3058590, "daily_breakdown": {"2025-05-05": 477881.0, "2025-05-06": 517525.0, "2025-05-07": 518076.0, "2025-05-08": 713365.0, "2025-05-09": 831743.0}, "period": "May 05 - May 09, 2025"}, "week_after": {"total": 1188765, "daily_breakdown": {"2025-05-10": 139445.0, "2025-05-11": 10662.0, "2025-05-12": 240275.0, "2025-05-13": 224188.0, "2025-05-14": 186409.0, "2025-05-15": 248982.0, "2025-05-16": 138804.0}, "period": "May 10 - May 16, 2025"}}, "V4": {"week": {"total": 2287784, "daily_breakdown": {"2025-06-02": 514547.0, "2025-06-03": 730032.0, "2025-06-04": 912797.0, "2025-06-05": 116454.0, "2025-06-06": 13954.0}, "period": "Jun 02 - Jun 06, 2025"}, "week_after": {"total": 821680, "daily_breakdown": {"2025-06-07": 12508.0, "2025-06-08": 2620.0, "2025-06-09": 48646.0, "2025-06-10": 251925.0, "2025-06-11": 185269.0, "2025-06-12": 204555.0, "2025-06-13": 79052.0, "2025-06-14": 37105.0}, "period": "Jun 07 - Jun 14, 2025"}}};
         
         // Convert to old format for compatibility
         const voucherWeekData = {};
@@ -485,7 +499,7 @@
         const timeMetricsData = {"by_day_of_week": {"Monday": 3267414.0, "Tuesday": 3799264.0, "Wednesday": 4052385.0, "Thursday": 4008399.0, "Friday": 4017751.0, "Saturday": 1035308.0, "Sunday": 174989.0}, "by_week_of_month": {"Week 3": 2460522.0, "Week 4": 2343948.0, "Week 1": 8533348.0, "Week 2": 6131954.0, "Week 5": 885738.0}, "by_month": {"February 2025": 505738.0, "March 2025": 4318681.0, "April 2025": 4190940.0, "May 2025": 6156911.0, "June 2025": 4509920.0, "July 2025": 673320.0}};
         
         // Load dashboard data
-        const dashboardData = {"last_updated": "2025-07-19 10:02:27", "semester": "Spring 2024-2025", "campus_data": {"Beirut": {"name": "Beirut", "total_usd": 10140134, "current_semester_usd": 8261251, "other_semesters_usd": 1878883, "vouchers_usd": {"V1": 2619802, "V2": 1948156, "V3": 1863554, "V4": 1716408}, "student_count_usd": 28895}, "Saida": {"name": "Saida", "total_usd": 3403809, "current_semester_usd": 2888714, "other_semesters_usd": 515095, "vouchers_usd": {"V1": 653725, "V2": 476443, "V3": 481978, "V4": 451744}, "student_count_usd": 10967}, "Nabatieh": {"name": "Nabatieh", "total_usd": 2328680, "current_semester_usd": 1851726, "other_semesters_usd": 476954, "vouchers_usd": {"V1": 622344, "V2": 431614, "V3": 401361, "V4": 364897}, "student_count_usd": 7052}, "Tripoli": {"name": "Tripoli", "total_usd": 3509322, "current_semester_usd": 2755999, "other_semesters_usd": 753323, "vouchers_usd": {"V1": 571354, "V2": 452629, "V3": 441201, "V4": 430016}, "student_count_usd": 10852}, "Mount Lebanon": {"name": "Mount Lebanon", "total_usd": 932161, "current_semester_usd": 762026, "other_semesters_usd": 170135, "vouchers_usd": {"V1": 167473, "V2": 118190, "V3": 116067, "V4": 103665}, "student_count_usd": 2828}, "Tyre": {"name": "Tyre", "total_usd": 3422094, "current_semester_usd": 2669964, "other_semesters_usd": 752130, "vouchers_usd": {"V1": 630459, "V2": 468454, "V3": 482292, "V4": 460072}, "student_count_usd": 9906}, "Akkar": {"name": "Akkar", "total_usd": 1611501, "current_semester_usd": 1165830, "other_semesters_usd": 445671, "vouchers_usd": {"V1": 418599, "V2": 261476, "V3": 206840, "V4": 181855}, "student_count_usd": 3915}}, "school_data": {"SoFR": {"name": "Fine Arts", "total_usd": 156475, "current_semester_usd": 141595, "other_semesters_usd": 14880, "percentage": 0.7}, "SoAS": {"name": "Arts & Sciences", "total_usd": 9781744, "current_semester_usd": 7870973, "other_semesters_usd": 1910771, "percentage": 38.67}, "SoEN": {"name": "Engineering", "total_usd": 4650557, "current_semester_usd": 3609832, "other_semesters_usd": 1040725, "percentage": 17.73}, "SoBU": {"name": "Business", "total_usd": 5381794, "current_semester_usd": 4320271, "other_semesters_usd": 1061523, "percentage": 21.22}, "SoPH": {"name": "Pharmacy", "total_usd": 4063850, "current_semester_usd": 3356255, "other_semesters_usd": 707595, "percentage": 16.49}, "SoED": {"name": "Education", "total_usd": 1313281, "current_semester_usd": 1056584, "other_semesters_usd": 256697, "percentage": 5.19}}, "totals": {"current_semester_usd": 20355510, "voucher_totals_usd": {"V1": 5683756, "V2": 4156962, "V3": 3993293, "V4": 3708657}}, "metrics": {"total_semester_collection": 20355510, "students_paid": 74415, "collection_percentage": 68.2}, "potential_collections": {"usd": {"V1": 7932833, "V2": 5958403, "V3": 5973367, "V4": 6263959, "Others": 3711222, "Total": 29839784}, "lbp": {"V1": 130638534000, "V2": 97855557000, "V3": 92407390000, "V4": 99315525000, "Others": 58005455000, "Total": 478222461000}}, "actual_collections": {"usd": {"V1": 5683756, "V2": 4156962, "V3": 3993293, "V4": 3708657, "Others": 2812842, "Total": 20355510}, "lbp": {"V1": 92978798000, "V2": 67691549000, "V3": 60625929000, "V4": 55517537000, "Others": 35806540000, "Total": 312620353000}}, "collection_percentages": {"usd": {"V1": 71.6, "V2": 69.8, "V3": 66.9, "V4": 59.2, "Others": 75.8, "Total": 68.2}, "lbp": {"V1": 71.2, "V2": 69.2, "V3": 65.6, "V4": 55.9, "Others": 61.7}}};
+        const dashboardData = {"last_updated": "2025-07-19 13:23:25", "semester": "Spring 2024-2025", "campus_data": {"Beirut": {"name": "Beirut", "total_usd": 10140134, "current_semester_usd": 8261251, "other_semesters_usd": 1878883, "vouchers_usd": {"V1": 2619802, "V2": 1948156, "V3": 1863554, "V4": 1716408}, "student_count_usd": 28895}, "Saida": {"name": "Saida", "total_usd": 3403809, "current_semester_usd": 2888714, "other_semesters_usd": 515095, "vouchers_usd": {"V1": 653725, "V2": 476443, "V3": 481978, "V4": 451744}, "student_count_usd": 10967}, "Nabatieh": {"name": "Nabatieh", "total_usd": 2328680, "current_semester_usd": 1851726, "other_semesters_usd": 476954, "vouchers_usd": {"V1": 622344, "V2": 431614, "V3": 401361, "V4": 364897}, "student_count_usd": 7052}, "Tripoli": {"name": "Tripoli", "total_usd": 3509322, "current_semester_usd": 2755999, "other_semesters_usd": 753323, "vouchers_usd": {"V1": 571354, "V2": 452629, "V3": 441201, "V4": 430016}, "student_count_usd": 10852}, "Mount Lebanon": {"name": "Mount Lebanon", "total_usd": 932161, "current_semester_usd": 762026, "other_semesters_usd": 170135, "vouchers_usd": {"V1": 167473, "V2": 118190, "V3": 116067, "V4": 103665}, "student_count_usd": 2828}, "Tyre": {"name": "Tyre", "total_usd": 3422094, "current_semester_usd": 2669964, "other_semesters_usd": 752130, "vouchers_usd": {"V1": 630459, "V2": 468454, "V3": 482292, "V4": 460072}, "student_count_usd": 9906}, "Akkar": {"name": "Akkar", "total_usd": 1611501, "current_semester_usd": 1165830, "other_semesters_usd": 445671, "vouchers_usd": {"V1": 418599, "V2": 261476, "V3": 206840, "V4": 181855}, "student_count_usd": 3915}}, "school_data": {"SoFR": {"name": "Fine Arts", "total_usd": 156475, "current_semester_usd": 141595, "other_semesters_usd": 14880, "percentage": 0.7}, "SoAS": {"name": "Arts & Sciences", "total_usd": 9781744, "current_semester_usd": 7870973, "other_semesters_usd": 1910771, "percentage": 38.67}, "SoEN": {"name": "Engineering", "total_usd": 4650557, "current_semester_usd": 3609832, "other_semesters_usd": 1040725, "percentage": 17.73}, "SoBU": {"name": "Business", "total_usd": 5381794, "current_semester_usd": 4320271, "other_semesters_usd": 1061523, "percentage": 21.22}, "SoPH": {"name": "Pharmacy", "total_usd": 4063850, "current_semester_usd": 3356255, "other_semesters_usd": 707595, "percentage": 16.49}, "SoED": {"name": "Education", "total_usd": 1313281, "current_semester_usd": 1056584, "other_semesters_usd": 256697, "percentage": 5.19}}, "totals": {"current_semester_usd": 20355510, "other_semesters_usd": 4992191, "all_collections_usd": 25347701, "voucher_totals_usd": {"V1": 5683756, "V2": 4156962, "V3": 3993293, "V4": 3708657}, "current_semester_lbp": 312620353000, "other_semesters_lbp": 84351403000, "all_collections_lbp": 396971756000}, "metrics": {"total_semester_collection": 20355510, "total_other_semesters": 4992191, "total_all_collections": 25347701, "students_paid": 74415, "collection_percentage": 68.2, "other_semesters_percentage": 19.7}, "potential_collections": {"usd": {"V1": 7932833, "V2": 5958403, "V3": 5973367, "V4": 6263959, "Others": 3711222, "Total": 29839784}, "lbp": {"V1": 130638534000, "V2": 97855557000, "V3": 92407390000, "V4": 99315525000, "Others": 58005455000, "Total": 478222461000}}, "actual_collections": {"usd": {"V1": 5683756, "V2": 4156962, "V3": 3993293, "V4": 3708657, "Others": 2812842, "Total": 20355510}, "lbp": {"V1": 92978798000, "V2": 67691549000, "V3": 60625929000, "V4": 55517537000, "Others": 35806540000, "Total": 312620353000}}, "collection_percentages": {"usd": {"V1": 71.6, "V2": 69.8, "V3": 66.9, "V4": 59.2, "Others": 75.8, "Total": 68.2}, "lbp": {"V1": 71.2, "V2": 69.2, "V3": 65.6, "V4": 55.9, "Others": 61.7, "Total": 65.4}}};
         
         let charts = {};
         
@@ -540,8 +554,24 @@
         // Update metric cards
         function updateMetrics() {
             const metrics = dashboardData.metrics;
+            const totals = dashboardData.totals;
+            
+            // Total all collections
+            document.getElementById('totalAllCollection').innerHTML = 
+                `${formatCurrency(metrics.total_all_collections)}`;
+            document.getElementById('currentSemesterAmount').innerHTML = 
+                formatCurrency(metrics.total_semester_collection);
+            document.getElementById('otherSemestersAmount').innerHTML = 
+                formatCurrency(metrics.total_other_semesters);
+            
+            // Current semester collection
             document.getElementById('totalCollection').innerHTML = 
                 `${formatCurrency(metrics.total_semester_collection)}`;
+            const percentOfTotal = ((metrics.total_semester_collection / metrics.total_all_collections) * 100).toFixed(1);
+            document.getElementById('percentOfTotal').innerHTML = 
+                `${percentOfTotal}% of total collections`;
+            
+            // Collection rate
             document.getElementById('collectionRate').innerHTML = 
                 `${metrics.collection_percentage}<span class="unit">%</span>`;
             document.getElementById('collectionProgress').style.width = 
@@ -892,92 +922,96 @@
         function createVoucherWeekAnalysis() {
             const voucherWeekCards = document.getElementById('voucherWeekCards');
             
-            // Create cards for each voucher with week and week after
-            Object.entries(voucherCompleteData).forEach(([voucher, data]) => {
+            // Spring semester has all 4 vouchers V1-V4
+            const vouchers = ['V1', 'V2', 'V3', 'V4'];
+            vouchers.forEach(voucher => {
+                const weekData = voucherCompleteData[voucher].week;
+                const weekAfterData = voucherCompleteData[voucher].week_after;
+                
                 // Week of voucher card
                 const weekCard = document.createElement('div');
                 weekCard.className = 'metric-card';
                 weekCard.innerHTML = `
                     <div class="label">Week of ${voucher}</div>
-                    <div class="value">${formatCurrency(data.week.total)}</div>
-                    <div style="font-size: 14px; color: #6b7280; margin-top: 10px;">${data.week.period}</div>
+                    <div class="value">${formatCurrency(weekData.total)}</div>
+                    <div style="font-size: 14px; color: #6b7280; margin-top: 10px;">${weekData.period}</div>
                 `;
                 voucherWeekCards.appendChild(weekCard);
                 
                 // Week after voucher card
                 const weekAfterCard = document.createElement('div');
                 weekAfterCard.className = 'metric-card';
-                const percentChange = ((data.week_after.total / data.week.total - 1) * 100).toFixed(1);
                 weekAfterCard.innerHTML = `
                     <div class="label">Week After ${voucher}</div>
-                    <div class="value">${formatCurrency(data.week_after.total)}</div>
-                    <div style="font-size: 14px; color: #6b7280; margin-top: 10px;">${data.week_after.period}</div>
-                    <div class="change ${percentChange < 0 ? 'negative' : 'positive'}">
-                        <span>${percentChange < 0 ? '↓' : '↑'} ${Math.abs(percentChange)}% vs week of</span>
-                    </div>
+                    <div class="value">${formatCurrency(weekAfterData.total)}</div>
+                    <div style="font-size: 14px; color: #6b7280; margin-top: 10px;">${weekAfterData.period}</div>
                 `;
                 voucherWeekCards.appendChild(weekAfterCard);
             });
             
-            // Create chart showing daily collections during voucher weeks
+            // Create chart showing voucher week and week after collections
             const ctx = document.getElementById('voucherWeekChart').getContext('2d');
             
-            // Prepare data for chart
-            const allDates = new Set();
-            const datasets = [];
-            const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'];
-            let colorIndex = 0;
+            // Prepare data for all voucher weeks and week after
+            let allDates = new Set();
+            let voucherDatasets = [];
             
-            // Collect all unique dates from both weeks and weeks after
-            Object.values(voucherCompleteData).forEach(data => {
-                Object.keys(data.week.daily_breakdown).forEach(date => allDates.add(date));
-                Object.keys(data.week_after.daily_breakdown).forEach(date => allDates.add(date));
+            ['V1', 'V2', 'V3', 'V4'].forEach(voucher => {
+                const weekData = voucherCompleteData[voucher].week.daily_breakdown;
+                const weekAfterData = voucherCompleteData[voucher].week_after.daily_breakdown;
+                Object.keys(weekData).forEach(date => allDates.add(date));
+                Object.keys(weekAfterData).forEach(date => allDates.add(date));
             });
             
+            // Sort dates
             const sortedDates = Array.from(allDates).sort();
             
-            // Create datasets for weeks and weeks after
-            Object.entries(voucherCompleteData).forEach(([voucher, data]) => {
-                // Week of voucher
-                const weekValues = sortedDates.map(date => {
-                    return data.week.daily_breakdown[date] ? data.week.daily_breakdown[date] / 1000000 : null;
-                });
+            // Create datasets for each voucher
+            const colors = {
+                'V1': '#10b981',
+                'V2': '#3b82f6',
+                'V3': '#f59e0b',
+                'V4': '#ef4444'
+            };
+            
+            ['V1', 'V2', 'V3', 'V4'].forEach(voucher => {
+                const weekData = voucherCompleteData[voucher].week.daily_breakdown;
+                const weekAfterData = voucherCompleteData[voucher].week_after.daily_breakdown;
                 
-                datasets.push({
-                    label: `Week of ${voucher}`,
-                    data: weekValues,
-                    backgroundColor: colors[colorIndex] + '20',
-                    borderColor: colors[colorIndex],
-                    borderWidth: 2,
+                // Voucher week dataset
+                const weekDataPoints = sortedDates.map(date => weekData[date] ? weekData[date] / 1000000 : null);
+                voucherDatasets.push({
+                    label: `${voucher} Week`,
+                    data: weekDataPoints,
+                    borderColor: colors[voucher],
+                    backgroundColor: colors[voucher] + '20',
+                    tension: 0.4,
+                    fill: true,
                     pointRadius: 6,
                     pointHoverRadius: 8,
-                    pointBackgroundColor: colors[colorIndex],
+                    pointBackgroundColor: colors[voucher],
                     pointBorderColor: '#ffffff',
                     pointBorderWidth: 2,
-                    spanGaps: false
+                    spanGaps: true
                 });
                 
-                // Week after voucher - use dashed line
-                const weekAfterValues = sortedDates.map(date => {
-                    return data.week_after.daily_breakdown[date] ? data.week_after.daily_breakdown[date] / 1000000 : null;
-                });
-                
-                datasets.push({
-                    label: `Week After ${voucher}`,
-                    data: weekAfterValues,
-                    backgroundColor: colors[colorIndex] + '10',
-                    borderColor: colors[colorIndex],
-                    borderWidth: 2,
+                // Week after dataset (with dashed line)
+                const weekAfterDataPoints = sortedDates.map(date => weekAfterData[date] ? weekAfterData[date] / 1000000 : null);
+                voucherDatasets.push({
+                    label: `${voucher} Week After`,
+                    data: weekAfterDataPoints,
+                    borderColor: colors[voucher],
+                    backgroundColor: colors[voucher] + '10',
                     borderDash: [5, 5],
+                    tension: 0.4,
+                    fill: false,
                     pointRadius: 4,
                     pointHoverRadius: 6,
-                    pointBackgroundColor: colors[colorIndex],
+                    pointBackgroundColor: colors[voucher],
                     pointBorderColor: '#ffffff',
                     pointBorderWidth: 2,
-                    spanGaps: false
+                    spanGaps: true
                 });
-                
-                colorIndex = (colorIndex + 1) % colors.length;
             });
             
             charts.voucherWeek = new Chart(ctx, {
@@ -987,7 +1021,7 @@
                         const d = new Date(date);
                         return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
                     }),
-                    datasets: datasets
+                    datasets: voucherDatasets
                 },
                 options: {
                     responsive: true,
@@ -1008,10 +1042,8 @@
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
-                                    if (context.parsed.y !== null) {
-                                        return context.dataset.label + ': ' + formatCurrency(context.parsed.y * 1000000);
-                                    }
-                                    return null;
+                                    if (context.raw === null) return null;
+                                    return context.dataset.label + ': ' + formatCurrency(context.raw * 1000000);
                                 }
                             }
                         }
